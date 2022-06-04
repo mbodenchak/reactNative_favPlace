@@ -1,4 +1,4 @@
-import { FlatList, View, Text } from "react-native";
+import { FlatList, View, Text, StyleSheet } from "react-native";
 import PlaceItem from "./PlaceItem";
 
 function PlacesList({ places }) {
@@ -22,7 +22,7 @@ function PlacesList({ places }) {
 
 export default PlacesList;
 
-const styles = Stylesheet.create({
+const styles = StyleSheet.create({
   fallbackContainer: {
     flex: 1,
     justifyContent: "center",
