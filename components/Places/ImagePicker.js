@@ -10,7 +10,7 @@ import OutlinedButton from "../UI/OutlinedButton";
 
 //permissionstatus tells us whether phone has camera permission
 //useCameraPermissions hook allows us to manually set permissions with function
-function ImagePicker() {
+function ImagePicker({ onTakeImage }) {
   const [pickedImage, setPickedImage] = useState();
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
@@ -41,6 +41,7 @@ function ImagePicker() {
     });
     console.log(image);
     setPickedImage(image.uri);
+    onTakeImage(image.uri); //passes it back through props out of imagePicker.
   }
 
   let imagePreview = <Text>No Image taken yet.</Text>;
