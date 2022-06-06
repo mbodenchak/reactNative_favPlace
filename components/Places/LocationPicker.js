@@ -1,25 +1,27 @@
-import { useState, useEffect } from "react";
-import { View, StyleSheet, Alert, Image, Text } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, View, StyleSheet, Image, Text } from "react-native";
 import {
   getCurrentPositionAsync,
   useForegroundPermissions,
   PermissionStatus,
 } from "expo-location";
-
-import OutlinedButton from "../UI/OutlinedButton";
-import { getAddress, getMapPreview } from "../../util/location";
-import { Colors } from "../../constants/colors";
 import {
   useNavigation,
   useRoute,
   useIsFocused,
 } from "@react-navigation/native";
 
-function LocationPicker({ onTakeLocation }) {
+import { Colors } from "../../constants/colors";
+import OutlinedButton from "../UI/OutlinedButton";
+import { getAddress, getMapPreview } from "../../util/location";
+
+function LocationPicker({ onPickLocation }) {
   const [pickedLocation, setPickedLocation] = useState();
   const isFocused = useIsFocused();
+
   const navigation = useNavigation();
   const route = useRoute();
+
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
 
@@ -28,7 +30,7 @@ function LocationPicker({ onTakeLocation }) {
       const mapPickedLocation = {
         lat: route.params.pickedLat,
         lng: route.params.pickedLng,
-      }; //&& is alternate for ternary here, ensuring mapPickedLocation is only set if route.params exists.
+      };
       setPickedLocation(mapPickedLocation);
     }
   }, [route, isFocused]);
@@ -40,34 +42,40 @@ function LocationPicker({ onTakeLocation }) {
           pickedLocation.lat,
           pickedLocation.lng
         );
-        onTakeLocation({ ...pickedLocation, address: address });
+        onPickLocation({ ...pickedLocation, address: address });
       }
     }
+
     handleLocation();
-  }, [pickedLocation, onTakeLocation]);
+  }, [pickedLocation, onPickLocation]);
 
   async function verifyPermissions() {
     if (
       locationPermissionInformation.status === PermissionStatus.UNDETERMINED
     ) {
       const permissionResponse = await requestPermission();
+
       return permissionResponse.granted;
     }
+
     if (locationPermissionInformation.status === PermissionStatus.DENIED) {
       Alert.alert(
-        "Insufficient Permissions!, You need to grant location permissions to use this app feature."
+        "Insufficient Permissions!",
+        "You need to grant location permissions to use this app."
       );
       return false;
     }
+
     return true;
   }
 
   async function getLocationHandler() {
-    const hasPermissions = await verifyPermissions();
+    const hasPermission = await verifyPermissions();
 
-    if (!hasPermissions) {
+    if (!hasPermission) {
       return;
     }
+
     const location = await getCurrentPositionAsync();
     setPickedLocation({
       lat: location.coords.latitude,
@@ -79,15 +87,19 @@ function LocationPicker({ onTakeLocation }) {
     navigation.navigate("Map");
   }
 
-  let locationPreview = <Text>No Location Picked Yet.</Text>;
+  let locationPreview = <Text>No location picked yet.</Text>;
+
   if (pickedLocation) {
     locationPreview = (
       <Image
         style={styles.image}
-        source={{ uri: getMapPreview(pickedLocation.lat, pickedLocation.lng) }}
+        source={{
+          uri: getMapPreview(pickedLocation.lat, pickedLocation.lng),
+        }}
       />
     );
   }
+
   return (
     <View>
       <View style={styles.mapPreview}>{locationPreview}</View>
@@ -124,6 +136,6 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    borderRadius: 4,
+    // borderRadius: 4
   },
 });
