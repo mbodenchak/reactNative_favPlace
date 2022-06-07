@@ -6,11 +6,11 @@ import AppLoading from "expo-app-loading";
 
 import AllPlaces from "./screens/AllPlaces";
 import AddPlace from "./screens/AddPlace";
-import Map from "./screens/Map";
 import IconButton from "./components/UI/IconButton";
-
 import { Colors } from "./constants/colors";
+import Map from "./screens/Map";
 import { init } from "./util/database";
+import PlaceDetails from "./screens/PlaceDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -23,7 +23,7 @@ export default function App() {
         setDbInitialized(true);
       })
       .catch((err) => {
-        console.log(err); //should create better error handling?
+        console.log(err);
       });
   }, []);
 
@@ -45,9 +45,8 @@ export default function App() {
           <Stack.Screen
             name="AllPlaces"
             component={AllPlaces}
-            //turn options into a function in order to get the navigation prop
             options={({ navigation }) => ({
-              title: "Your Places",
+              title: "Your Favorite Places",
               headerRight: ({ tintColor }) => (
                 <IconButton
                   icon="add"
@@ -62,14 +61,15 @@ export default function App() {
             name="AddPlace"
             component={AddPlace}
             options={{
-              title: "Add A New Place",
+              title: "Add a new Place",
             }}
           />
+          <Stack.Screen name="Map" component={Map} />
           <Stack.Screen
-            name="Map"
-            component={Map}
+            name="PlaceDetails"
+            component={PlaceDetails}
             options={{
-              title: "Pick A Location",
+              title: "Loading Place...",
             }}
           />
         </Stack.Navigator>
